@@ -1,0 +1,11 @@
+[Unit]
+Description=FlowerCare
+After=network.target,bluetooth.target
+
+[Service]
+User=pi
+Type=simple
+ExecStart=/usr/bin/python3 /home/pi/flowercare/flowercare.py /home/pi/flowercare/flowercare.json
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+{
+    "general": {
+        "sleep": 1800
+    },
+    "mqtt": {
+        "clientName": "mirroreg-flowercare",
+        "host": "10.1.1.1",
+        "port": 1883,
+        "username": "test",
+        "password": "test123"
+    },
+    "sensors": [
+        {
+            "topic": "flowercare/flowerone",
+            "interval": 1,
+            "name": "flowerone",
+            "mac": "AA:BB:CC:DD:EE:FF",
+            "readTemperature": true,
+            "readMoisture": true,
+            "readLight": false,
+            "readConductivity": false,
+            "readBattery": true
+        }
+    ]
+}
