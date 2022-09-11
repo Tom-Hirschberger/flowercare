@@ -41,7 +41,7 @@ def connect_mqtt_client():
     
     print("Connecting to MQTT broker: %s" % config["mqtt"]["host"])
     try:
-        if not ((config["mqtt"]["username"] is None) or (config["mqtt"]["username"] is "")):
+        if not ((config["mqtt"]["username"] is None) or (config["mqtt"]["username"] == "")):
             client.username_pw_set(config["mqtt"]["username"], config["mqtt"]["password"])
         client.connect(config["mqtt"]["host"])
     except:
