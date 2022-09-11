@@ -7,6 +7,7 @@
 import sys
 import paho.mqtt.client as mqtt
 import json5
+import json
 import pprint
 import time
 from miflora.miflora_poller import MiFloraPoller
@@ -73,7 +74,7 @@ def callback_on_message(client, userdata, message):
 
 def publish_values(topic,values):
     if client != None and client.connected_flag:
-        client.publish(topic,json5.dumps(values))
+        client.publish(topic,json.dumps(values))
     else:
         print("Client is not initialized or not connected!")
 
