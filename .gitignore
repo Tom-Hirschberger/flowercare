@@ -128,4 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+flowercare.json
+flowercare-mm.json
 my_config.json
