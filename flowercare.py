@@ -104,7 +104,7 @@ while True:
                     if cur_sensor_config["readConductivity"] == True:
                         cur_result["conducitivity"] = pollers[idx].parameter_value('conductivity')
                     if cur_sensor_config["readBattery"] == True: 
-                        cur_result["battary"] = pollers[idx].parameter_value('battery')
+                        cur_result["battery"] = pollers[idx].parameter_value('battery')
                         
                     print("Sensor: %s" %cur_sensor_config["name"])
                     pprint.pprint(cur_result, indent=2)
