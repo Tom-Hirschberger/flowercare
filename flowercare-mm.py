@@ -2,8 +2,8 @@
 # install:
 #sudo pip3 install miflora
 #sudo pip3 install bluepy
-#sudo pip3 install json5
 import sys
+import json
 import json5
 import pprint
 import time
@@ -38,4 +38,4 @@ for cur_sensor_config in config["sensors"]:
     except:
         results[cur_sensor_config["name"]] = "error"
 
-print(json5.dumps(results))
+print(json.dumps(results))
