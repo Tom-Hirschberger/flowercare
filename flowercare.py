@@ -81,22 +81,23 @@ def publish_values(topic,values):
     else:
         print("Client is not initialized or not connected!")
 
-def restoreSkipConfig(skipConfig=0, key=None):
+def restoreSkipConfig(intervalConfig=0, key=None):
     global possibleKeys
     curSkipConfig = {}
-    if isinstance(skipConfig,dict):
+    
+    if isinstance(intervalConfig,dict):
+        pprint.pprint(intervalConfig)
         if key is None:
             for skipType in possibleKeys:
-                curSkipConfig[skipType] = skipConfig.get(skipType, 0)
+                curSkipConfig[skipType] = intervalConfig.get(skipType, 1) - 1
         else:
-            curSkipConfig[key] = skipConfig.get(key, 0)
+            curSkipConfig[key] = intervalConfig.get(key, 1) - 1
     else:
         if key is None:
             for skipType in possibleKeys:
-                curSkipConfig[skipType] = skipConfig
+                curSkipConfig[skipType] = intervalConfig - 1
         else:
-            curSkipConfig[key] = skipConfig
-
+            curSkipConfig[key] = intervalConfig - 1
     return curSkipConfig
 
 
@@ -107,7 +108,7 @@ last_result = []
 idx = 0
 for cur_sensor in config["sensors"]:
     last_result.append({})
-    skip.append(restoreSkipConfig(skipConfig=0))
+    skip.append(restoreSkipConfig(intervalConfig=1))
     pollers.append(MiFloraPoller(config["sensors"][idx]["mac"], BluepyBackend))
     idx += 1
 
@@ -124,10 +125,10 @@ while True:
                     if cur_sensor_config[readKey] == True:
                         if cur_skip_config[curType] <= 0:
                             cur_result[curType] = pollers[idx].parameter_value(curType)
-                            restoreSkipConfig(skipConfig=config["sensors"][idx].get('interval',1)-1, key=curType)
+                            skip[idx][curType] = restoreSkipConfig(intervalConfig=config["sensors"][idx].get('interval',1), key=curType)[curType]
                         else:
                             skip[idx][curType] = skip[idx][curType] - 1
-                            if (config["resendValueOnPartialSkip"] == True) and (curType in last_result[idx]):
+                            if (config["general"].get("resendValueOnPartialSkip", True) is True) and (curType in last_result[idx]):
                                 cur_result[curType] = last_result[idx][curType]
 
                 last_result[idx] = cur_result
@@ -138,7 +139,7 @@ while True:
                 publish_values(cur_sensor_config["topic"], cur_result)
             except Exception:
                 print("Problems while reading sensor %s. Skipping!" % cur_sensor_config["name"])
-                traceback.print_exc()
+                # traceback.print_exc()
             idx += 1
     except:
         pass
