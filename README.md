@@ -176,7 +176,7 @@ The following example contains all possible configuration options:
                 "moisture": 2,
                 "battery": 5
             },
-            "name": "flowerone",
+            "name": "flowertwo",
             "mac": "AA:BB:CC:AA:BB:CC",
             "readTemperature": true,
             "readMoisture": true,
