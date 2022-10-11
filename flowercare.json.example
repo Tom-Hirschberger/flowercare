@@ -1,6 +1,7 @@
 {
     "general": {
-        "sleep": 1800
+        "sleep": 1800,
+        "resendValueOnPartialSkip": treu
     },
     "mqtt": {
         "clientName": "mirroreg-flowercare",

@@ -4,6 +4,7 @@
 #sudo pip3 install bluepy
 #sudo pip3 install paho-mqtt
 #sudo pip3 install json5
+from difflib import restore
 import sys
 import paho.mqtt.client as mqtt
 import json5
@@ -25,6 +26,7 @@ else:
     config = read_json("/home/pi/flowercare/config.json")
 
 skip = []
+possibleKeys = ("temperature", "moisture", "battery", "conducitivity", "light")
 pollers = []
 
 client = None
@@ -78,12 +80,33 @@ def publish_values(topic,values):
     else:
         print("Client is not initialized or not connected!")
 
+def restoreSkipConfig(skipConfig=0, key=None):
+    global possibleKeys
+    curSkipConfig = {}
+    if isinstance(skipConfig,dict):
+        if key != None:
+            for skipType in possibleKeys:
+                curSkipConfig[skipType] = skipConfig.get(skipType, 0)
+        else:
+            curSkipConfig[key] = skipConfig.get(key, 0)
+    else:
+        if key != None:
+            for skipType in possibleKeys:
+                curSkipConfig[skipType] = skipConfig
+        else:
+            curSkipConfig[key] = skipConfig
+    
+    return curSkipConfig
+
 
 connect_mqtt_client()
 
+last_result = []
+
 idx = 0
 for cur_sensor in config["sensors"]:
-    skip.append(0)
+    last_result.append({})
+    skip.append(restoreSkipConfig(skipConfig=0))
     pollers.append(MiFloraPoller(config["sensors"][idx]["mac"], BluepyBackend))
     idx += 1
 
@@ -91,31 +114,30 @@ while True:
     try:
         idx = 0
         for cur_sensor in config["sensors"]:
-            if skip[idx] <= 0:
-                try:
-                    cur_sensor_config = config["sensors"][idx]
-                    cur_result = {}
-                    if cur_sensor_config["readTemperature"] == True:
-                        cur_result["temperature"] = pollers[idx].parameter_value('temperature')
-                    if cur_sensor_config["readMoisture"] == True:
-                        cur_result["moisture"] = pollers[idx].parameter_value('moisture')
-                    if cur_sensor_config["readLight"] == True:
-                        cur_result["light"] = pollers[idx].parameter_value('light')
-                    if cur_sensor_config["readConductivity"] == True:
-                        cur_result["conducitivity"] = pollers[idx].parameter_value('conductivity')
-                    if cur_sensor_config["readBattery"] == True: 
-                        cur_result["battery"] = pollers[idx].parameter_value('battery')
-                        
-                    print("Sensor: %s" %cur_sensor_config["name"])
-                    pprint.pprint(cur_result, indent=2)
-                        
-                    publish_values(cur_sensor_config["topic"], cur_result)
-                    skip[idx] = cur_sensor_config["interval"] - 1
-                except:
-                    print("Problems while reading sensor %s. Skipping!" % cur_sensor_config["name"])
-                    pass
-            else:
-                skip[idx] = skip[idx] - 1
+            cur_sensor_config = config["sensors"][idx]
+            cur_skip_config = skip[idx]
+            cur_result = {}
+            try:
+                for curType in possibleKeys:
+                    readKey = "read"+curType[0].upper() + curType[1:]
+                    if cur_sensor_config[readKey] == True:
+                        if cur_skip_config["curType"] <= 0:
+                            cur_result["curType"] = pollers[idx].parameter_value('curType')
+                            restoreSkipConfig(skipConfig=config["sensors"][idx].get('interval',1)-1, key="curType")
+                        else:
+                            skip[idx]["curType"] = skip[idx]["curType"] - 1
+                            if (config["resendValueOnPartialSkip"] == True) and ("curType" in last_result[idx]):
+                                cur_result["curType"] = last_result[idx]["curType"]
+
+                last_result[idx] = cur_result
+                
+                print("Sensor: %s" %cur_sensor_config["name"])
+                pprint.pprint(cur_result, indent=2)
+                    
+                publish_values(cur_sensor_config["topic"], cur_result)
+            except:
+                print("Problems while reading sensor %s. Skipping!" % cur_sensor_config["name"])
+                pass
             idx += 1
     except:
         pass
