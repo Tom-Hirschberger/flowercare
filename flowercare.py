@@ -143,4 +143,4 @@ while True:
     except:
         pass
     
-    time.sleep(config["general"]["sleep"])
+    time.sleep(config.get("general",{}).get("sleep",1800))
