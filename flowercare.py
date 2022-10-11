@@ -86,7 +86,6 @@ def restoreSkipConfig(intervalConfig=0, key=None):
     curSkipConfig = {}
     
     if isinstance(intervalConfig,dict):
-        pprint.pprint(intervalConfig)
         if key is None:
             for skipType in possibleKeys:
                 curSkipConfig[skipType] = intervalConfig.get(skipType, 1) - 1
@@ -122,7 +121,7 @@ while True:
             try:
                 for curType in possibleKeys:
                     readKey = "read"+curType[0].upper() + curType[1:]
-                    if cur_sensor_config[readKey] == True:
+                    if cur_sensor_config.get(readKey, False) is True:
                         if cur_skip_config[curType] <= 0:
                             cur_result[curType] = pollers[idx].parameter_value(curType)
                             skip[idx][curType] = restoreSkipConfig(intervalConfig=config["sensors"][idx].get('interval',1), key=curType)[curType]

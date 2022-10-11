@@ -1,7 +1,7 @@
 {
     "general": {
         "sleep": 1800,
-        "resendValueOnPartialSkip": treu
+        "resendValueOnPartialSkip": true
     },
     "mqtt": {
         "clientName": "mirroreg-flowercare",
@@ -20,6 +20,19 @@
             "readMoisture": true,
             "readLight": false,
             "readConductivity": false,
+            "readBattery": true
+        },
+        {
+            "topic": "flowercare/flowertwo",
+            "interval": {
+                "temperture": 1,
+                "moisture": 2,
+                "battery": 5
+            },
+            "name": "flowerone",
+            "mac": "AA:BB:CC:AA:BB:CC",
+            "readTemperature": true,
+            "readMoisture": true,
             "readBattery": true
         }
     ]
