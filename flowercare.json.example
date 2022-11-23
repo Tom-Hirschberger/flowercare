@@ -8,11 +8,15 @@
         "host": "10.1.1.1",
         "port": 1883,
         "username": "test",
-        "password": "test123"
+        "password": "test123",
+        "retain": False,
+        "qos": 0
     },
     "sensors": [
         {
             "topic": "flowercare/flowerone",
+            "qos": 1,
+            "retain": true,
             "interval": 1,
             "name": "flowerone",
             "mac": "AA:BB:CC:DD:EE:FF",
