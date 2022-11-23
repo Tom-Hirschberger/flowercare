@@ -185,3 +185,4 @@ The following example contains all possible configuration options:
     ]
 }
 ```
+>>>>>>> main

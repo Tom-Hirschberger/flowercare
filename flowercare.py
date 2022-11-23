@@ -75,9 +75,9 @@ def callback_on_message(client, userdata, message):
     print ("Received message %s for topic %s" %(message_str, message.topic))
 
 
-def publish_values(topic,values):
+def publish_values(topic,values,qos=0,retain=False):
     if client != None and client.connected_flag:
-        client.publish(topic,json.dumps(values))
+        client.publish(topic,json.dumps(values),qos=qos,retain=retain)
     else:
         print("Client is not initialized or not connected!")
 
@@ -134,8 +134,12 @@ while True:
                 
                 print("Sensor: %s" %cur_sensor_config["name"])
                 pprint.pprint(cur_result, indent=2)
-                    
-                publish_values(cur_sensor_config["topic"], cur_result)
+                
+                curQos = cur_sensor_config.get("qos", config.get("mqtt",{}).get("qos", 0))
+                curRetain = cur_sensor_config.get("retain", config.get("mqtt",{}).get("retain", False))
+                
+                print("Publishing to topic %s with qos %d and retain flag set to %s!" %(cur_sensor_config["topic"],curQos,curRetain))
+                publish_values(cur_sensor_config["topic"], cur_result, curQos, curRetain)
             except Exception:
                 print("Problems while reading sensor %s. Skipping!" % cur_sensor_config["name"])
                 # traceback.print_exc()
