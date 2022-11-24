@@ -1,6 +1,6 @@
 [Unit]
 Description=FlowerCare
-After=network.target,bluetooth.target
+After=network.target bluetooth.target
 
 [Service]
 User=pi
